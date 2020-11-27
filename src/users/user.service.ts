@@ -60,4 +60,8 @@ export class UsersService {
       return { ok: false, error };
     }
   }
+
+  async findById(id: number) {
+    return this.users.findOne({ id });
+  }
 }
