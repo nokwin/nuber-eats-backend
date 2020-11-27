@@ -1,15 +1,16 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import { CreateAccountInput } from './dtos/create-account.dto';
 import { LoginInput } from './dtos/login.dto';
 import { User } from './entities/users.entity';
+import { JwtService } from 'src/jwt/jwt.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async createAccount({
@@ -52,7 +53,9 @@ export class UsersService {
         return { ok: false, error: 'Wrong password' };
       }
 
-      return { ok: true, token: 'lslalsals' };
+      const token = this.jwtService.sign(user.id);
+
+      return { ok: true, token };
     } catch (error) {
       return { ok: false, error };
     }
